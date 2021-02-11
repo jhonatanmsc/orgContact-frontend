@@ -4,6 +4,7 @@ import router from './router';
 import store from './store';
 import vuetify from './plugins/vuetify';
 import GoogleAuth from '@/config/google_oAuth.js';
+import VueApexCharts from 'vue-apexcharts';
 
 const gauthOption = {
   clientId: process.env.VUE_APP_GOOGLE_CLIENT_ID,
@@ -13,6 +14,7 @@ const gauthOption = {
 
 Vue.config.productionTip = false;
 Vue.use(GoogleAuth, gauthOption);
+Vue.component('apexchart', VueApexCharts)
 
 new Vue({
   router,

@@ -88,7 +88,7 @@
             <v-btn
               color="red darken-1"
               text
-              @click="dialog = false"
+              @click="logout"
             >
               Sim
             </v-btn>
@@ -104,6 +104,8 @@
 </template>
 
 <script>
+import {api, getUrl} from '@/services/api';
+import router from '@/router';
 
 export default {
   name: 'MainLayout',
@@ -117,8 +119,19 @@ export default {
     username: localStorage.getItem('givenName'),
     items: [
       { title: 'Resumo', icon: 'mdi-view-dashboard', to: '/' },
-      { title: 'About', icon: 'mdi-help-box', to: '/about' },
+      { title: 'Gráficos', icon: 'mdi-chart-donut', to: '/graficos' },
     ],
   }),
+  methods: {
+    logout() {
+      api.get(getUrl('logout'), {headers: {'Content-Type': 'application/json'}})
+        .then(res => {
+          router.push('/login');
+        })
+        .catch(err => {
+          alert(err);
+        })
+    }
+  }
 };
 </script>

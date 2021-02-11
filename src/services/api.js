@@ -12,7 +12,7 @@ const getUrl = (urlname, args=[]) => {
     
     // Core
     case 'contacts': return `contacts`
-    case 'contacts-report': return `contacts/report`
+    case 'refresh-contacts': return `refresh-contacts`
   }
 }
 

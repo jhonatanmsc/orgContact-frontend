@@ -3,6 +3,13 @@
     <v-card>
       <v-card-title>
         Contatos
+        <v-btn
+          icon
+          color="green"
+          @click.prevent="refreshContacts"
+        >
+          <v-icon>mdi-cached</v-icon>
+        </v-btn>
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -16,11 +23,14 @@
         :headers="headers"
         :items="desserts"
         :search="search"
+        :loading="loading"
+        loading-text="Loading... Please wait"
       ></v-data-table>
     </v-card>
   </MainLayout>
 </template>
 <script>
+import router from '@/router';
 import MainLayout from '@/containers/MainLayout.vue';
 import {api, getUrl} from '@/services/api';
 
@@ -33,6 +43,7 @@ export default {
     return {
       newTaskTitle: '',
       search: '',
+      loading: false,
       headers: [
         {
           text: 'Domínio',
@@ -42,44 +53,46 @@ export default {
         },
         { text: 'Emails', value: 'emails' },
       ],
-      desserts: [
-        {
-          orgnization: 'Frozen Yogurt',
-          emails: [],
-        },
-        
-      ],
+      desserts: [],
     }
   },
   mounted(){
-    api.get(`?access_token=${localStorage.getItem('accessToken')}&unique_id=${localStorage.getItem('uniqueId')}`, {headers: {'Content-Type': 'application/json'}})
+    this.loading = true;
+    api.get(`${getUrl('contacts')}?unique_id=${localStorage.getItem('uniqueId')}`, {headers: {'Content-Type': 'application/json'}})
       .then(res => {
-        console.log(res.data.accounts)
-        this.desserts = res.data.accounts.map(contact => {
-          return {
-            organization: contact.organization,
-            emails: contact.emails.join(', ')
-          }
-        })
+        if (res.data.accounts.length > 0) {
+          this.desserts = res.data.accounts.map(contact => {
+            return {
+              organization: contact.organization,
+              emails: contact.emails.join(', ')
+            }
+          })
+        }
+        this.loading = false;
       })
-      .catch(err => alert(err))
+      .catch(err => {
+        alert(err);
+        router.push('/login');
+      })
   },
   methods: {
-    doneTask(id) {
-      let task = this.tasks.filter(task => task.id === id)[0];
-      task.done = !task.done;
-    },
-    deleteTask(id) {
-      this.tasks = this.tasks.filter(task => task.id !== id);
-    },
-    addTask() {
-      let newTask = {
-        id: Date.now(),
-        title: this.newTaskTitle,
-        done:false
-      }
-      this.tasks.push(newTask);
-      this.newTaskTitle = '';
+    refreshContacts() {
+      this.loading = true;
+      api.get(`${getUrl('refresh-contacts')}?unique_id=${localStorage.getItem('uniqueId')}&access_token=${localStorage.getItem('accessToken')}`, {headers: {'Content-Type': 'application/json'}})
+        .then(res => {
+          if (res.data.accounts.length > 0) {
+            this.desserts = res.data.accounts.map(contact => {
+              return {
+                organization: contact.organization,
+                emails: contact.emails.join(', ')
+              }
+            })
+          }
+          this.loading = false;
+        })
+        .catch(err => {
+          alert(err);
+        })
     }
   }
 }

@@ -1,56 +1,28 @@
 <template>
   <MainLayout>
-    <div class="home">
-      <v-text-field
-        v-model="newTaskTitle"
-        @click:append="addTask"
-        @keyup.enter="addTask"
-        class="pa-3"
-        filled
-        label="Append"
-        append-icon="mdi-plus"
-        hide-details
-        clearable
-      ></v-text-field>
-      <v-list
-        class="pt-0"
-        flat
-      >
-        <div v-for="task in tasks" :key="task.id"> 
-          <v-list-item
-            @click="doneTask(task.id)"
-            :class="{ 'blue lighten-5': task.done }"
-          >
-            <template >
-              <v-list-item-action>
-                <v-checkbox :input-value="task.done"></v-checkbox>
-              </v-list-item-action>
-
-              <v-list-item-content>
-                <v-list-item-title
-                  :class="{ 'text-decoration-line-through' : task.done }"
-                >
-                  {{task.title}}
-                </v-list-item-title>
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-btn 
-                  @click.stop="deleteTask(task.id)"
-                  icon
-                >
-                  <v-icon color="primary lighten-1">mdi-delete</v-icon>
-                </v-btn>
-              </v-list-item-action>
-            </template>
-          </v-list-item>
-          <v-divider></v-divider>
-        </div>
-      </v-list>
-    </div>
+    <v-card>
+      <v-card-title>
+        Contatos
+        <v-spacer></v-spacer>
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          hide-details
+        ></v-text-field>
+      </v-card-title>
+      <v-data-table
+        :headers="headers"
+        :items="desserts"
+        :search="search"
+      ></v-data-table>
+    </v-card>
   </MainLayout>
 </template>
 <script>
 import MainLayout from '@/containers/MainLayout.vue';
+import {api, getUrl} from '@/services/api';
 
 export default {
   name: 'Home',
@@ -60,8 +32,37 @@ export default {
   data() {
     return {
       newTaskTitle: '',
-      tasks: []
+      search: '',
+      headers: [
+        {
+          text: 'Domínio',
+          align: 'start',
+          sortable: false,
+          value: 'organization',
+        },
+        { text: 'Emails', value: 'emails' },
+      ],
+      desserts: [
+        {
+          orgnization: 'Frozen Yogurt',
+          emails: [],
+        },
+        
+      ],
     }
+  },
+  mounted(){
+    api.get(`?access_token=${localStorage.getItem('accessToken')}&unique_id=${localStorage.getItem('uniqueId')}`, {headers: {'Content-Type': 'application/json'}})
+      .then(res => {
+        console.log(res.data.accounts)
+        this.desserts = res.data.accounts.map(contact => {
+          return {
+            organization: contact.organization,
+            emails: contact.emails.join(', ')
+          }
+        })
+      })
+      .catch(err => alert(err))
   },
   methods: {
     doneTask(id) {

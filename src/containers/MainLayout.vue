@@ -54,7 +54,7 @@
 
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-app-bar-title>{{this.$store.state.loginUser.givenName}}</v-app-bar-title>
+      <v-app-bar-title>{{username}}</v-app-bar-title>
 
       <v-spacer></v-spacer>
 
@@ -114,10 +114,11 @@ export default {
   data: () => ({
     drawer: null,
     dialog: false,
+    username: localStorage.getItem('givenName'),
     items: [
       { title: 'Resumo', icon: 'mdi-view-dashboard', to: '/' },
       { title: 'About', icon: 'mdi-help-box', to: '/about' },
-    ]
+    ],
   }),
 };
 </script>

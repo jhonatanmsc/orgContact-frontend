@@ -20,7 +20,9 @@
 </template>
 
 <script>
-import router from '@/router'
+import router from '@/router';
+import {api, getUrl} from '@/services/api';
+
 export default {
   name: 'login_signup_social',
   data() {
@@ -44,7 +46,7 @@ export default {
         .signIn()
         .then(GoogleUser => {
           // on success do something
-          console.log('GoogleUser', GoogleUser)
+          console.log(GoogleUser)
           var userInfo = {
             uniqueId: GoogleUser.Ca,
             accessToken: GoogleUser.uc.access_token,
@@ -57,7 +59,15 @@ export default {
             userPicture: GoogleUser.Es.vl
           }
           this.$store.commit('setLoginUser', userInfo)
-          router.push('/')
+          api.get(`${getUrl('login')}?id_token=${userInfo.idToken}&access_token=${userInfo.accessToken}`, userInfo, {headers: {'Content-Type': 'application/json'}})
+            .then(res => {
+              console.log(res);
+              router.push('/')
+            })
+            .catch(err => {
+              alert(err.response.data.message);
+            })
+          
         })
         .catch(error => {
           console.log('error', error)

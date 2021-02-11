@@ -32,8 +32,10 @@ let privateRoutes = [
 
 privateRoutes = privateRoutes.map(route => {
   route.beforeEnter = (to, from, next) => {
-    if(store.state.loginUser === null) {
-      next(false);
+    if(localStorage.getItem('idToken') === null) {
+      next({
+        name: 'Login'
+      });
     } else {
       next();
     }

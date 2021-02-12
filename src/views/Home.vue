@@ -67,6 +67,9 @@ export default {
               emails: contact.emails.join(', ')
             }
           })
+        } else {
+          this.loading = false;
+          this.refreshContacts()
         }
         this.loading = false;
       })
@@ -74,6 +77,7 @@ export default {
         alert(err);
         router.push('/login');
       })
+    
   },
   methods: {
     refreshContacts() {

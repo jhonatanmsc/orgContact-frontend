@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 import store from '../store'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
+import Politics from '../views/Politics.vue'
+import Terms from '../views/Terms.vue'
 
 Vue.use(VueRouter)
 
@@ -11,6 +13,16 @@ let publicRoutes = [
     path: '/login',
     name: 'Login',
     component: Login
+  },
+  {
+    path: '/politicas',
+    name: 'Politicas de privacidade',
+    component: Politics
+  },
+  {
+    path: '/termos',
+    name: 'Termos de uso',
+    component: Terms
   }
 ]
 
